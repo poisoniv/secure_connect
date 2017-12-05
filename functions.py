@@ -1,16 +1,40 @@
 from meraki import meraki
 import datetime
 
+#probably also need to return the IP address of the requester?
+def get_credentials():
+    username = input("Enter username: ")
+    password = input("Enter password: ")
+    return (username, password)
+
+#need to replace this with more robust database lookup
 def radius_challenge(username, password) :
-    #need to replace this with database lookup
-    if username in ['admin'] and password in ['password']: return True
+    if username in ['admin'] and password in ['password']:
+        return True
     else : return False
 
+#this will probably be sent to a logging server of some sort...
 def record(username, type) :
-    # Create log file named log.txt
-    #log_file = open("log.txt", "a+")
-    #log_file.write("Action: " + type + ", User: " + username + ", Time: " + datetime.datetime.now())
-    print("Action: " + type + ", User: " + username + ", Time: " + datetime.datetime.now())
+    print("{:%D} {:%H:%M:%S}  | Username: {} | Type: {}".format(datetime.datetime.now(), datetime.datetime.now(), username, type))
+    log_file = open("log.txt", "a+")
+    log_file.write("{:%D} {:%H:%M:%S} | Username: {} | Type: {}\n".format(datetime.datetime.now(), datetime.datetime.now(), username, type))
+    log_file.close()
+    return
+
+#take user's IP address, apply ALC to firewall allowing access to that IP address
+def apply_acl(api_key, org_id, username, ip_address, source, destination_address) :
+    firewall_rules = meraki.getmxvpnfwrules(api_key, org_id, suppressprint=True)
+    #want to be more specific in the comment
+    new_rule = [{'comment': 'Allow user "' + username + '" access to customer [insert customer]', 'policy': 'allow', 'protocol': 'any', 'destPort': 'any', 'destCidr': destination_address, 'srcPort': 'Any', 'srcCidr': ip_address, 'syslogEnabled': True}]
+
+    firewall_rules.insert(0, new_rule)
+
+
+
+
+
+
+    meraki.updatemxvpnfwrules(api_key, org_id, firewall_rules, syslogDefaultRule=False, suppressprint=True)
 
 
 
@@ -19,19 +43,8 @@ def record(username, type) :
 
 
 
-def get_status():
-    file = open("api_key.txt", "r")
-    api_key = file.read()
-    # api_key = [insert here]
-    # print(api_key)
-
-    file = open("org_id.txt", "r")
-    org_id = file.read()
-    # org_id = '316511'
-    # print(org_id)
-
-    # Create output file named output.txt
-    output_file = open("log.txt", "w")
+def remove_acl() :
+    return
 
     #Retrieve list of networks in organization
     networks = meraki.getnetworklist(api_key, org_id, suppressprint=True)

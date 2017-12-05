@@ -1,17 +1,13 @@
 import functions
 
-username = input("Enter username: ")
-password = input("Enter password: ")
-
-type = 0;
+(username, password) = functions.get_credentials()
 
 if functions.radius_challenge(username, password) :
     print("Accepted")
-    functions.record(username, type)
+    functions.record(username, "Login Success")
 else :
     print("Failed")
-    type = 1;
-    functions.record(username, type)
+    functions.record(username, "Login Failure")
 
 #functions.get_status()
 
