@@ -1,4 +1,5 @@
 from meraki import meraki
+from users import users
 import datetime
 
 # probably also need to return the IP address of the requester?
@@ -10,10 +11,10 @@ def get_credentials():
 
 # need to replace this with more robust database lookup
 def radius_challenge(username, password) :
-    if username in ['admin'] and password in ['password'] :
+    if username in users and password == users[username]:
         record(username, "Login Success")
         return True
-    else :
+    else:
         record(username, "Login Failure")
         return False
 
