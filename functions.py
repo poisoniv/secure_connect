@@ -1,5 +1,6 @@
 from meraki import meraki
 from users import users
+from config import config
 import datetime
 
 # probably also need to return the IP address of the requester?
@@ -29,32 +30,59 @@ def record(username, type) :
 
 
 # take user's IP address, apply ALC to firewall allowing access to that IP address
-def apply_acl(api_key, org_id, username, customer, source_address, destination_address) :
-    firewall_rules = meraki.getmxvpnfwrules(api_key, org_id, suppressprint=True)
-    new_rule = [
-        {'comment': 'Allow user "' + username + '" access to ' + customer + '.', 'policy': 'allow', 'protocol': 'any',
-         'destPort': 'any', 'destCidr': destination_address, 'srcPort': 'Any', 'srcCidr': source_address,
-         'syslogEnabled': False}]
+def apply_acl(username, customer, source_address, destination_address) :
+    firewall_rules = meraki.getmxvpnfwrules(config['api_key'], config['org_id'], suppressprint=True)
+    new_rule = {
+        'comment': 'Allow {} access to {}.'.format(username, customer),
+        'policy': 'allow',
+        'protocol': 'any',
+        'destPort': 'any',
+        'destCidr': destination_address,
+        'srcPort': 'Any',
+        'srcCidr': source_address,
+        'syslogEnabled': False
+    }
     firewall_rules.insert(0, new_rule)
-    meraki.updatemxvpnfwrules(api_key, org_id, firewall_rules, syslogDefaultRule=False, suppressprint=True)
+    firewall_rules.pop()
+    meraki.updatemxvpnfwrules(config['api_key'], config['org_id'], firewall_rules, syslogDefaultRule=False, suppressprint=True)
     record(username, "Session Start")
     return
 
 
-def remove_acl(api_key, org_id, source_address) :
-    firewall_rules = meraki.getmxvpnfwrules(api_key, org_id, suppressprint=True)
-    firewall_rules.index(source_address)
+def remove_acl(username, source_address) :
+    old_rule = meraki.getmxvpnfwrules(config['api_key'], config['org_id'], suppressprint=True)
+    new_rule = []
+    for rule in old_rule:
+        if rule['srcCidr'] == source_address or rule['comment'] == 'Default rule':
+            continue
+        else:
+            new_rule.append(rule)
+    meraki.updatemxvpnfwrules(config['api_key'], config['org_id'], new_rule, syslogDefaultRule=False, suppressprint=True)
+    record(username, "Session End")
 
 
 
-    [1, 2, 3].index(2)  # => 1
-    [1, 2, 3].index(4)  # => ValueError
 
 
 
-    firewall_rules.insert(0, new_rule)
-    meraki.updatemxvpnfwrules(api_key, org_id, firewall_rules, syslogDefaultRule=False, suppressprint=True)
 
 
 
-    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
