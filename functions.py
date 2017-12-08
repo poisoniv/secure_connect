@@ -1,6 +1,8 @@
 from meraki import meraki
 from users import users
 from config import config
+import json
+import ipaddress
 import datetime
 
 # probably also need to return the IP address of the requester?
@@ -60,6 +62,17 @@ def remove_acl(username, source_address) :
     meraki.updatemxvpnfwrules(config['api_key'], config['org_id'], new_rule, syslogDefaultRule=False, suppressprint=True)
     record(username, "Session End")
 
+def check_activity(network_id):
+    analysis = meraki.getnetworktrafficstats(config['api_key'], network_id, timespan=86400, devicetype='combined', suppressprint=True)
+    usage = (0, 0)
+    print(usage)
+    for app in analysis:
+        try:
+            if ipaddress.ip_address(app['destination']) in ipaddress.ip_network("8.8.8.0/24"):
+                usage += (int(app['recv']), int(app['sent']))
+        except ValueError:
+            continue
+    print(usage)
 
 
 

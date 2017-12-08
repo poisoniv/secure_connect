@@ -1,17 +1,28 @@
 from functions import *
+from meraki import meraki
+import ipaddress
+from netaddr import *
+import json
 import time
 
-source_address = "192.168.1.30/32"
-customer = "EA"
-destination_address = "any"
+# source_address = "10.0.1.3/32"
+# customer = "EA"
+# destination_address = "10.0.2.0/24"
+#
+# (username, password) = get_credentials()
+#
+# if radius_challenge(username, password) == False:
+#    exit(code="Login Failure")
+#
+# apply_acl(username, customer, source_address, destination_address)
+# time.sleep(60)
+# remove_acl(username, source_address)
 
-(username, password) = get_credentials()
 
-if radius_challenge(username, password) == False:
-   exit(code="Login Failure")
+network_id = 'L_638385247179767950'
+check_activity(network_id)
 
-apply_acl(username, customer, source_address, destination_address)
-time.sleep(60)
-remove_acl(username, source_address)
+
+
 
 print("Executed successfully...")
