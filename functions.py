@@ -64,15 +64,16 @@ def remove_acl(username, source_address) :
 
 def check_activity(network_id):
     analysis = meraki.getnetworktrafficstats(config['api_key'], network_id, timespan=86400, devicetype='combined', suppressprint=True)
-    usage = (0, 0)
-    print(usage)
+    data_recv = 0
+    data_sent = 0
     for app in analysis:
         try:
             if ipaddress.ip_address(app['destination']) in ipaddress.ip_network("8.8.8.0/24"):
-                usage += (int(app['recv']), int(app['sent']))
+                data_recv += int(app['recv'])
+                data_sent += int(app['sent'])
         except ValueError:
             continue
-    print(usage)
+
 
 
 

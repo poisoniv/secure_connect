@@ -1,7 +1,6 @@
 from functions import *
 from meraki import meraki
 import ipaddress
-from netaddr import *
 import json
 import time
 
