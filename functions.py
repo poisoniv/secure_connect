@@ -4,7 +4,7 @@ from config import config
 import json
 import ipaddress
 import datetime
-from models import db, Login
+from models import db, connections
 # probably also need to return the IP address of the requester?
 
 def get_credentials():
@@ -16,21 +16,33 @@ def get_credentials():
 # need to replace this with more robust database lookup
 def radius_challenge(username, password) :
     if username in users and password == users[username]:
+        database_login(username)
         record(username, "Login Success")
-
-        # Put this here as a quick and dirty option. Would likely make more sense in record()
-        # todo: Record user session start date/time
-        # todo: Remove record after session termination.
-        # todo: Idle session process should check for 'inactive' entries.
-        login = Login()
-        login.name = username
-        db.session.add(login)
-        db.session.commit()
         return True
     else:
         record(username, "Login Failure")
         return False
 
+def database_login(username):
+    # Put this here as a quick and dirty option. Would likely make more sense in record()
+    # todo: Record user session start date/time
+    # todo: Remove record after session termination.
+    # todo: Idle session process should check for 'inactive' entries.
+    login = connections()
+    login.username = username
+    login.activity = 100
+    db.session.add(login)
+    db.session.commit()
+    return
+
+def database_checkstatus():
+    # todo: get list of users in database
+    # todo: check status for each user
+    # todo: mark session for closure if idle
+    status = connections()
+
+
+    return
 
 # this will probably be sent to a logging server of some sort...
 def record(username, type) :

@@ -16,15 +16,15 @@ destination_address = "10.0.2.0/24"
 if radius_challenge(username, password) == False:
    exit(code="Login Failure")
 
-apply_acl(username, customer, source_address, destination_address)
-time.sleep(60)
-remove_acl(username, source_address)
+#apply_acl(username, customer, source_address, destination_address)
+#time.sleep(60)
+#remove_acl(username, source_address)
 
 
-network_id = 'L_638385247179767950'
-check_activity(network_id)
+#network_id = 'L_638385247179767950'
+#check_activity(network_id)
 
-
+database_checkstatus()
 
 
 print("Executed successfully...")
