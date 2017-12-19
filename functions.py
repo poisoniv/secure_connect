@@ -39,8 +39,10 @@ def database_checkstatus():
     # todo: get list of users in database
     # todo: check status for each user
     # todo: mark session for closure if idle
+    username = 'tom'
     status = connections()
-
+    test = status.query.filter(status.username.ilike(username))
+    print(test)
 
     return
 
