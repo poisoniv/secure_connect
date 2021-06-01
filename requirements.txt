@@ -9,5 +9,5 @@ MarkupSafe==1.0
 meraki==0.26
 meraki-api==1.1.3
 requests==2.18.4
-urllib3==1.22
+urllib3==1.26.5
 Werkzeug==0.12.2
